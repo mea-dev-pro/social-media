@@ -1,0 +1,4 @@
+ => shadcn-ui
+ => Zod form schema
+ => appwrite database
+ 

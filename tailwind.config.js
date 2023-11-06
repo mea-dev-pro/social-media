@@ -14,7 +14,7 @@ export default {
       padding: '2rem',
       screens: {
         '2xl': '1400px',
-
+      
       },
     },
     extend: {
@@ -35,7 +35,7 @@ export default {
       },
       screens: {
         'xs': '480px',
-
+      
       },
       width: {
         '420': '420px',
@@ -61,6 +61,5 @@ export default {
       },
     },
   },
-  plugins: [import('tailwindcss-animate')]
-}
-
+  plugins: [import('tailwindcss-animate')],
+};
