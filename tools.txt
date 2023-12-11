@@ -1,4 +1,5 @@
  => shadcn-ui
  => Zod form schema
  => appwrite database
+ => react-query
  

@@ -17,12 +17,11 @@ import { SignupValidation } from "@/lib/validation";
 import { Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createUserAccount } from "@/lib/appwrite/api";
-import { userCreateUserAccountMutation } from "@/lib/react-query/queriesAndMutations";
+import { useCreateUserAccount, useSignInAccount,  } from "@/lib/react-query/queriesAndMutations";
 
 
 const SignupForm = () => {
     const { toast } = useToast();
-    const isLoading = false;
 
     const form = useForm<z.infer<typeof SignupValidation>>({
         resolver: zodResolver(SignupValidation),
@@ -32,9 +31,10 @@ const SignupForm = () => {
             email: "",
             password: ""
         },
-    })
+    });
 
-    const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = userCreateUserAccountMutation();
+    const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
+    const { mutateAsync: singInAccount, isLoading: isSigningIn } = useSignInAccount ();
 
     async function onSubmit(values: z.infer<typeof SignupValidation>) {
         const newUser = await createUserAccount(values);
@@ -44,9 +44,16 @@ const SignupForm = () => {
             return toast({
                 title: "Sign up failed. Please try again. "
             });
-        }
+        };
 
-        const session = await signInAccount();
+        const session = await singInAccount({
+            email:values.email,
+            password:values.password
+        });
+
+        if (!session) {
+                return toast({title:"Sign in failed. Please try again."});
+        };
     }
 
     return (
@@ -111,7 +118,7 @@ const SignupForm = () => {
                         )}
                     />
                     <Button type="submit" className="shad-button_primary">
-                        {isLoading ? (
+                        {isCreatingAccount ? (
                             <div className="flex-center gap-2">
                                 <Loader /> Loading ...
                             </div>
