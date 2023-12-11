@@ -15,14 +15,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation";
 import { Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createUserAccount } from "@/lib/appwrite/api";
-import { useCreateUserAccount, useSignInAccount,  } from "@/lib/react-query/queriesAndMutations";
+import { useCreateUserAccount, useSignInAccount, } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 
 const SignupForm = () => {
     const { toast } = useToast();
+    const navigate = useNavigate(); 
 
+    const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
     const form = useForm<z.infer<typeof SignupValidation>>({
         resolver: zodResolver(SignupValidation),
         defaultValues: {
@@ -34,7 +37,7 @@ const SignupForm = () => {
     });
 
     const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
-    const { mutateAsync: singInAccount, isLoading: isSigningIn } = useSignInAccount ();
+    const { mutateAsync: singInAccount, isLoading: isSigningIn } = useSignInAccount();
 
     async function onSubmit(values: z.infer<typeof SignupValidation>) {
         const newUser = await createUserAccount(values);
@@ -47,15 +50,23 @@ const SignupForm = () => {
         };
 
         const session = await singInAccount({
-            email:values.email,
-            password:values.password
+            email: values.email,
+            password: values.password
         });
 
         if (!session) {
-                return toast({title:"Sign in failed. Please try again."});
-        };
-    }
+            return toast({ title: "Sign in failed. Please try again." });
+        }
 
+        const isLoggedIn = await checkAuthUser();
+
+        if (isLoggedIn) {
+            form.reset();
+            navigate('/')
+        }else{
+            return toast({title: 'Sign up failed. Please try again.'})
+        }
+    }
     return (
         <Form {...form}>
 
