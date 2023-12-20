@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation";
 import { Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserAccount } from "@/lib/appwrite/api";
 import { useCreateUserAccount, useSignInAccount, } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 
